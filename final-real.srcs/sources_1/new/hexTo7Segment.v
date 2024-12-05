@@ -38,6 +38,7 @@ module hexTo7Segment(
           8'h5A : segments = 7'b1100100;   // Z
           8'h5C : segments = 7'b0011011;   // \
           8'h5F : segments = 7'b1110111;   // _
+          8'h30 : segments = 7'b1000000;  // 0
           8'h31 : segments = 7'b1111001;  // 1
           8'h32 : segments = 7'b0100100;  // 2
           8'h33  : segments = 7'b0110000; // 3
@@ -67,7 +68,7 @@ module hexTo7Segment(
           8'h2E : segments = 7'b1101111;   // .
           8'h2F : segments = 7'b0101101;  // /
           8'hB0 : segments = 7'b0011100;   //?
-          default : segments = 7'b0111111;   // 0
+          default : segments = 7'b0111111;   // -
       endcase
 				
 endmodule

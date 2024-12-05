@@ -1,3 +1,23 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: gedagedigedagedago
+// Design Name: 
+// Module Name: system
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
 
 module system(
     output [6:0] seg,
@@ -6,25 +26,22 @@ module system(
     output wire RsTx, //uart
     input [7:0] sw,
     input wire RsRx, //uart // [7:4] for Higher num hex, [3:0] for Lower num
-    input clk
+    input clk,
+    output wire [3:0] vgaRed,
+    output wire [3:0] vgaGreen,
+    output wire [3:0] vgaBlue,
+    output wire Hsync,
+    output wire Vsync
     );
 
     wire [3:0] num3, num2, num1, num0; // left to right
     wire an0, an1, an2, an3;
     assign an = {an3, an2, an1, an0};
     
-
-    wire targetClk;
-    wire [18:0] tclk;
+    wire seggClk;
     wire [7:0] O;
-
-    assign tclk[0] = clk;
-    genvar c;
-    generate for(c = 0; c < 18; c = c + 1) begin
-        clockDiv fDiv(tclk[c+1], tclk[c]);
-    end endgenerate
     
-    clockDiv fdivTarget(targetClk, tclk[18]);
+    seggClockDiv seggDiv(clk, seggClk);
     
     wire received;
     uart uart_instance(clk, RsRx, RsTx, O, received);
@@ -32,17 +49,44 @@ module system(
     wire [31:0] seggData;
     circularLinkedList ll(received, O, seggData);
     
+    wire vga_clk;
+    
+    clk_wiz_0 wizardo(
+        .clk_in1(clk),
+        .clk_out1(vga_clk)
+    );
+    
     quadSevenSeg q7seg(
-        seg,
-        dp,
-        an0,
-        an1,
-        an2,
-        an3,
-        seggData[31:24],
-        seggData[23:16],
-        seggData[15:8],
-        seggData[7:0],
-        targetClk
+        .seg(seg),
+        .dp(dp),
+        .an0(an0),
+        .an1(an1),
+        .an2(an2),
+        .an3(an3),
+        .num0(seggData[31:24]),
+        .num1(seggData[23:16]),
+        .num2(seggData[15:8]),
+        .num3(seggData[7:0]),
+        .clk(seggClk)
         );
+        
+    wire [9:0] h_counter, v_counter;
+    
+    pixel vga_display(
+        .clk(clk),
+        .h_pos(h_counter),
+        .v_pos(v_counter),
+        .red(vgaRed),
+        .green(vgaGreen),
+        .blue(vgaBlue)
+    );
+        
+    vga_sync vga_sync(
+        .clk(clk),
+        .vga_clk(vga_clk),
+        .Hsync(Hsync),
+        .Vsync(Vsync),
+        .h_out(h_counter),
+        .v_out(v_counter)
+    );
 endmodule
