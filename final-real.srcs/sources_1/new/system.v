@@ -24,7 +24,6 @@ module system(
     output dp,
     output [3:0] an,
     output wire RsTx, //uart
-    input [7:0] sw,
     input wire RsRx, //uart // [7:4] for Higher num hex, [3:0] for Lower num
     input clk,
     output wire [3:0] vgaRed,
@@ -36,18 +35,42 @@ module system(
 
     // Section: UAART
     wire received;
+    wire [7:0] O;
     uart uart_instance(clk, RsRx, RsTx, O, received);
+    
+    reg [7:0] oClone;
+    
+    reg [1:0] received_counter;
+    reg received_nextclk;
+
+    always @(posedge clk) begin
+        oClone = O;
+        
+        if (received && received_counter == 0) begin
+            received_counter <= 1;
+        end else if (received_counter == 1) begin
+            received_counter <= 2;
+        end else if (received_counter >= 2) begin
+            received_nextclk <= 1;
+        end
+        
+        if (received == 0 && received_counter > 0) begin
+            received_counter <= 0;
+            received_nextclk <= 0;
+        end
+    end
 
     wire [31:0] seggData;
-    circularLinkedList ll(received, O, seggData);
+    circularLinkedList #(4) seggLL(received_nextclk, oClone, seggData);
+    
+    wire [63:0] vgaData;
+    circularLinkedList #(8) vgaLL(received_nextclk, oClone, vgaData);
 
     // Section: 7 Segment
     wire an0, an1, an2, an3;
     assign an = {an3, an2, an1, an0};
 
     wire seggClk;
-    wire [7:0] O;
-
     seggClockDiv seggDiv(clk, seggClk);
 
     quadSevenSeg q7seg(
@@ -61,6 +84,10 @@ module system(
         .num1(seggData[23:16]),
         .num2(seggData[15:8]),
         .num3(seggData[7:0]),
+//        .num0(vgaData[63:56]),
+//        .num1(vgaData[55:48]),
+//        .num2(vgaData[47:40]),
+//        .num3(vgaData[39:32]),
         .clk(seggClk)
         );
 
@@ -78,6 +105,7 @@ module system(
         .clk(clk),
         .h_pos(h_counter),
         .v_pos(v_counter),
+        .text_data(vgaData),
         .red(vgaRed),
         .green(vgaGreen),
         .blue(vgaBlue)
