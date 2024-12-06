@@ -36,15 +36,20 @@ begin
     size =0;
 end
 
-always @(posedge enanan)
+always @(negedge enanan)
 begin
     if (inByte == 8'h0A || inByte == 8'h0D)
         begin
             data <= 0;
             size <= 0;
         end
-    else
-        begin
+    else if (inByte == 8'h08) begin
+        if (size > 0) begin
+            data[((size - 1) * 8) +: 8] <= 8'h00;
+            size <= size - 1;    
+        end
+    end
+    else begin
             if (size < LENGTH) begin
                 // Add new byte at the correct position
                 data[(size*8) +: 8] <= inByte;

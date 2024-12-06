@@ -1,11 +1,9 @@
 `timescale 1ns / 1ps
 
 module hexTo7Segment(
-    output [6:0] segments,
+    output reg [6:0] segments,
     input [7:0] hex
-    );
-    
-    reg [6:0] segments;
+);
 
    always @(hex)
       case (hex)

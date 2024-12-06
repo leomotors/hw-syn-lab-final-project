@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 12/06/2024 01:39:43 AM
+// Create Date: 12/06/2024 09:10:23 PM
 // Design Name: 
-// Module Name: seggClockDiv
+// Module Name: clockDiv
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -19,14 +19,16 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-// Clock Divider for 7 Segment Module
-module seggClockDiv(
+
+module clockDiv #(
+    parameter BITS = 18
+)(
     input clk,
     output clk_out
-    );
+);
     
-    reg [17:0] counter;
-    assign clk_out = counter[17];
+    reg [BITS-1:0] counter;
+    assign clk_out = counter[BITS-1];
     
     always @(posedge clk) begin
         counter <= counter + 1;

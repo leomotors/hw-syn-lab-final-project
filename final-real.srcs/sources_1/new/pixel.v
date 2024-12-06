@@ -22,13 +22,14 @@
 
 module pixel(
     input clk,
+    input rgb_clk,
     input wire [9:0] h_pos,
     input wire [9:0] v_pos,
     input wire [63:0] text_data,
     output wire [3:0] red,
     output wire [3:0] green,
     output wire [3:0] blue
-    );
+);
     
     parameter H_DISPLAY = 640;  // Horizontal active video
     parameter V_DISPLAY = 480;  // Vertical active video
@@ -57,6 +58,20 @@ module pixel(
     parameter AREA_X_END = 462;
     parameter AREA_Y_START = 224;
     parameter AREA_Y_END = 256;
+    
+    parameter RGB_X_LEFT = 170;
+    parameter RGB_X_RIGHT = 469;
+    parameter RGB_Y_TOP = 216;
+    parameter RGB_Y_BOTTOM = 263;
+    reg [9:0] rgb_index;
+    wire [3:0] rgb_r, rgb_g, rgb_b;
+    rgb_pixel rgb_pixel(
+        .clk(rgb_clk),
+        .x(rgb_index),
+        .r(rgb_r),
+        .g(rgb_g),
+        .b(rgb_b)
+    );
     
     reg [3:0] alphabet_index;
     reg [5:0] alphabet_x;
@@ -95,7 +110,26 @@ module pixel(
             g = font_on ? 4'b1111: 4'b0000;
             b = font_on ? 4'b1111: 4'b0000;
         end
-        else
+        else if (
+            ((v_pos == RGB_Y_TOP || v_pos == RGB_Y_TOP + 1) && h_pos >= RGB_X_LEFT && h_pos <= RGB_X_RIGHT)
+            || ((v_pos == RGB_Y_BOTTOM || v_pos == RGB_Y_BOTTOM - 1) && h_pos >= RGB_X_LEFT && h_pos <= RGB_X_RIGHT)
+            || ((h_pos == RGB_X_LEFT || h_pos == RGB_X_LEFT + 1) && v_pos >= RGB_Y_TOP && v_pos <= RGB_Y_BOTTOM)
+            || ((h_pos == RGB_X_RIGHT || h_pos == RGB_X_RIGHT - 1) && v_pos >= RGB_Y_TOP && v_pos <= RGB_Y_BOTTOM)
+        ) begin
+            if (v_pos == RGB_Y_TOP || v_pos == RGB_Y_TOP + 1) begin
+                rgb_index = h_pos - RGB_X_LEFT;
+            end else if (h_pos == RGB_X_RIGHT || h_pos == RGB_X_RIGHT - 1) begin
+                rgb_index = (RGB_X_RIGHT - RGB_X_LEFT) + (v_pos - RGB_Y_TOP);
+            end else if (v_pos == RGB_Y_BOTTOM || v_pos == RGB_Y_BOTTOM - 1) begin
+                rgb_index = (RGB_X_RIGHT - RGB_X_LEFT) + (RGB_Y_BOTTOM - RGB_Y_TOP) + (RGB_X_RIGHT - h_pos);
+            end else begin
+                rgb_index = (RGB_X_RIGHT - RGB_X_LEFT) + (RGB_Y_BOTTOM - RGB_Y_TOP) + (RGB_X_RIGHT - RGB_X_LEFT) + (RGB_Y_BOTTOM - v_pos);
+            end
+            
+            r = rgb_r;
+            g = rgb_g;
+            b = rgb_b;
+        end else
         begin
             r = (h_pos < H_DISPLAY && v_pos < V_DISPLAY) ? pixel_data[11:8] : 4'b0000;
             g = (h_pos < H_DISPLAY && v_pos < V_DISPLAY) ? pixel_data[7:4] : 4'b0000;

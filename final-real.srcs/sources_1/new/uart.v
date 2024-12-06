@@ -22,7 +22,7 @@ module uart(
         if (~last_rec & received) begin
             data_in = data_out;
             data_2 = data_out;
-            if ((data_in <= 8'h7A && data_in >= 8'h20) || data_in == 8'h0A || data_in == 8'h0D)
+            if ((data_in <= 8'h7A && data_in >= 8'h20) || data_in == 8'h0A || data_in == 8'h0D || data_in == 8'h08)
             begin
                 en = 1;
                 data_ready = 1;
