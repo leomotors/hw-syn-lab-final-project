@@ -1,13 +1,12 @@
 # HW Syn Lab Final Project
 
-Gedagedigedagedago
-Abin mery alontamago
-Wede wude comfrom? Wede wude go?
+Gedagedigedagedago  
+Abin mery alontamago  
+Wede wude comfrom? Wede wude go?  
 Wede jude kamfro Bagulado?
 
-Gedagedigedagedago
-Abin mery alontamago
-Wede wude comfrom? Wede wude go?
-Wede jude kamfro Chicken Eye Joe?
+![](./mai-nugget.png)
 
-![](./mai-gay.png)
+## Project Details
+
+Project requirement is to utilize UART to communicate between two Basys 3 board, when input from keyboard is sent to the first board, the text will be displayed on the VGA monitor connected to the second board.
