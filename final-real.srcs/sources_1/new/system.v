@@ -34,28 +34,22 @@ module system(
     output wire Vsync
     );
 
-    wire [3:0] num3, num2, num1, num0; // left to right
-    wire an0, an1, an2, an3;
-    assign an = {an3, an2, an1, an0};
-    
-    wire seggClk;
-    wire [7:0] O;
-    
-    seggClockDiv seggDiv(clk, seggClk);
-    
+    // Section: UAART
     wire received;
     uart uart_instance(clk, RsRx, RsTx, O, received);
-    
+
     wire [31:0] seggData;
     circularLinkedList ll(received, O, seggData);
-    
-    wire vga_clk;
-    
-    clk_wiz_0 wizardo(
-        .clk_in1(clk),
-        .clk_out1(vga_clk)
-    );
-    
+
+    // Section: 7 Segment
+    wire an0, an1, an2, an3;
+    assign an = {an3, an2, an1, an0};
+
+    wire seggClk;
+    wire [7:0] O;
+
+    seggClockDiv seggDiv(clk, seggClk);
+
     quadSevenSeg q7seg(
         .seg(seg),
         .dp(dp),
@@ -69,6 +63,14 @@ module system(
         .num3(seggData[7:0]),
         .clk(seggClk)
         );
+
+    // Section: VGA Display
+    wire vga_clk;
+
+    clk_wiz_0 wizardo(
+        .clk_in1(clk),
+        .clk_out1(vga_clk)
+    );
         
     wire [9:0] h_counter, v_counter;
     
@@ -80,7 +82,7 @@ module system(
         .green(vgaGreen),
         .blue(vgaBlue)
     );
-        
+
     vga_sync vga_sync(
         .clk(clk),
         .vga_clk(vga_clk),
