@@ -5,7 +5,7 @@ Abin mery alontamago
 Wede wude comfrom? Wede wude go?  
 Wede jude kamfro Bagulado?
 
-<img src="./mai-nugget.png" width=300 />
+<img src="./mai-nugget.webp" width=300 />
 
 ## Project Details and Requirements
 
