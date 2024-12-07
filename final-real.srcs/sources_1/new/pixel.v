@@ -28,7 +28,8 @@ module pixel(
     input wire [63:0] text_data,
     output wire [3:0] red,
     output wire [3:0] green,
-    output wire [3:0] blue
+    output wire [3:0] blue,
+    output wire magic_debug_led
 );
     
     parameter H_DISPLAY = 640;  // Horizontal active video
@@ -60,7 +61,7 @@ module pixel(
     parameter AREA_Y_END = 256;
     
     parameter RGB_X_LEFT = 170;
-    parameter RGB_X_RIGHT = 469;
+    parameter RGB_X_RIGHT = 470;
     parameter RGB_Y_TOP = 216;
     parameter RGB_Y_BOTTOM = 263;
     reg [9:0] rgb_index;
@@ -70,7 +71,8 @@ module pixel(
         .x(rgb_index),
         .r(rgb_r),
         .g(rgb_g),
-        .b(rgb_b)
+        .b(rgb_b),
+        .magic_debug_led(magic_debug_led)
     );
     
     reg [3:0] alphabet_index;

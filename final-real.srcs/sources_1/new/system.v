@@ -28,23 +28,39 @@ module system(
     input wire hRx,
     output wire hTx,
     input clk,
+    input [7:0] sw,
+    output [15:0] led,
+    input btnC,
     output wire [3:0] vgaRed,
     output wire [3:0] vgaGreen,
     output wire [3:0] vgaBlue,
     output wire Hsync,
     output wire Vsync
 );
+    // Section: Input
+    assign led[7:0] = sw;
+    assign led[15] = btnC;
+
+    wire btnCReal;
+    reg btnCToggle;
+    assign led[14] = btnCToggle;
+    inputBuffer makeBtnCReal(.clk(seggClk), .D(btnC), .Q(btnCReal));
+    always @(posedge btnCReal) begin
+        btnCToggle = ~btnCToggle;
+    end
 
     // Section: UART
     wire received;
     wire [7:0] uart_raw_data;
-    uart uart_my_pc(
+    uart uart_from_my_pc(
         .clk(clk),
         .RsRx(RsRx),
-        .RsTx(hTx)
+        .RsTx(hTx),
+        .sw(sw),
+        .sendSW(btnCReal)
     );
-    
-    uart uart_other_pc(
+
+    uart uart_from_other_pc(
         .clk(clk),
         .RsRx(hRx),
         .RsTx(RsTx),
@@ -98,9 +114,12 @@ module system(
     );
     
     wire rgb_clk;
-    clockDiv #(6) clockDiv(seggClk, rgb_clk);
+    clockDiv #(4) clockDiv(seggClk, rgb_clk);
         
     wire [9:0] h_counter, v_counter;
+    
+    wire magic_rgb_debug_led;
+    assign led[12] = magic_rgb_debug_led;
     
     pixel vga_display(
         .clk(clk),
@@ -110,7 +129,8 @@ module system(
         .text_data(vgaData),
         .red(vgaRed),
         .green(vgaGreen),
-        .blue(vgaBlue)
+        .blue(vgaBlue),
+        .magic_debug_led(magic_rgb_debug_led)
     );
 
     vga_sync vga_sync(

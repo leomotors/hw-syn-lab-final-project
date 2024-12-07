@@ -25,23 +25,26 @@ module rgb_pixel(
     input [9:0] x,
     output wire [3:0] r,
     output wire [3:0] g,
-    output wire [3:0] b
+    output wire [3:0] b,
+    output wire magic_debug_led
 );
 
-parameter BOX_PERIMETER = 300 * 2 + 48 * 2 - 4;
+parameter BOX_PERIMETER = 300 * 2 + 48 * 2 - 4; // 692
 parameter AVAILABLE_COLORS = 45;
 
 reg [9:0] time_counter;
 reg [10:0] offset;
 
+assign magic_debug_led = time_counter >= BOX_PERIMETER / 2;
+
 always @(posedge clk) begin
     if (time_counter >= BOX_PERIMETER) begin
-        time_counter = 0;
+        time_counter <= 0;
     end else begin
-        time_counter = time_counter + 1;
+        time_counter <= time_counter + 1;
     end
     
-    offset = (time_counter + x) % AVAILABLE_COLORS;
+    offset <= (time_counter + x / 4) % AVAILABLE_COLORS;
 end
 
 // Continuous assignments to the wire outputs r, g, and b
