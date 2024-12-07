@@ -58,7 +58,9 @@ Wede jude kamfro Bagulado?
 
 <img src="./demo.webp" width=500 />
 
-Note: Not my table
+Note: Not my table and so any acrylic stand there
+
+As you can see, there are some artifacts due to clock wizard not generating exactly 25.175 MHz (Closest it can be is 25.17301 MHz)
 
 Thank you @Bee0Theepob for suggesting images (eg. Chill Guy, pizza) to put in this background
 
