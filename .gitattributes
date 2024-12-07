@@ -1,0 +1,6 @@
+final-real.gen/** linguist-generated=true
+final-real.hw/** linguist-generated=true
+final-real.ip_user_files/** linguist-generated=true
+
+# So my project is marked as Verilog not Jupyter Notebook (mostly image data)
+*.ipynb linguist-detectable=false
