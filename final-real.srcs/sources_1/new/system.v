@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: gedagedigedagedago
-// Design Name: 
+// Design Name:
 // Module Name: system
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 module system(
@@ -31,6 +31,7 @@ module system(
     input [7:0] sw,
     output [15:0] led,
     input btnC,
+    input btnR,
     output wire [3:0] vgaRed,
     output wire [3:0] vgaGreen,
     output wire [3:0] vgaBlue,
@@ -40,14 +41,18 @@ module system(
     // Section: Input
     assign led[7:0] = sw;
     assign led[15] = btnC;
+    assign led[14] = btnR;
+
+    wire btnRReal;
+    reg btnRToggle;
+    assign led[13] = btnRToggle;
+    inputBuffer makeBtnRReal(.clk(seggClk), .D(btnR), .Q(btnRReal));
+    always @(posedge btnRReal) begin
+        btnRToggle = ~btnRToggle;
+    end
 
     wire btnCReal;
-    reg btnCToggle;
-    assign led[14] = btnCToggle;
     inputBuffer makeBtnCReal(.clk(seggClk), .D(btnC), .Q(btnCReal));
-    always @(posedge btnCReal) begin
-        btnCToggle = ~btnCToggle;
-    end
 
     // Section: UART
     wire received;
@@ -57,7 +62,7 @@ module system(
         .RsRx(RsRx),
         .RsTx(hTx),
         .sw(sw),
-        .sendSW(btnCReal)
+        .sendSW(btnRReal)
     );
 
     uart uart_from_other_pc(
@@ -67,7 +72,7 @@ module system(
         .data_2(uart_raw_data),
         .data_ready(received)
     );
-    
+
     wire [7:0] uart_data;
     wire uart_signal;
     uartClockMajik majik1(
@@ -79,10 +84,20 @@ module system(
     );
 
     wire [31:0] seggData;
-    circularLinkedList #(4) seggLL(uart_signal, uart_data, seggData);
-    
+    slidingBuffer #(4) seggBuffa(
+        .enanan(uart_signal),
+        .reset(btnCReal),
+        .inByte(uart_data),
+        .data(seggData)
+    );
+
     wire [63:0] vgaData;
-    circularLinkedList #(8) vgaLL(uart_signal, uart_data, vgaData);
+    slidingBuffer #(8) vgaBuffa(
+        .enanan(uart_signal),
+        .reset(btnCReal),
+        .inByte(uart_data),
+        .data(vgaData)
+    );
 
     // Section: 7 Segment
     wire an0, an1, an2, an3;
@@ -110,17 +125,18 @@ module system(
 
     clk_wiz_0 wizardo(
         .clk_in1(clk),
-        .clk_out1(vga_clk)
+        .clk_out1(vga_clk),
+        .reset(btnCReal)
     );
-    
+
     wire rgb_clk;
     clockDiv #(4) clockDiv(seggClk, rgb_clk);
-        
+
     wire [9:0] h_counter, v_counter;
-    
+
     wire magic_rgb_debug_led;
     assign led[12] = magic_rgb_debug_led;
-    
+
     pixel vga_display(
         .clk(clk),
         .rgb_clk(rgb_clk),

@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 12/08/2024 01:39:28 AM
-// Design Name: 
+// Design Name:
 // Module Name: tx_mux_tester
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -47,19 +47,19 @@ end
 initial begin
     data1 = 8'h11;
     data2 = 8'h22;
-    
+
     #5 ena1 = 1;
     #5 ena1 = 0;
-    
+
     #5 ena2 = 1;
     #5 ena2 = 0;
-    
+
     #5 ena2 = 1;
     #5 ena2 = 0;
-    
+
     #5 ena1 = 1;
     #5 ena1 = 0;
-    
+
     #5 $finish;
 end
 

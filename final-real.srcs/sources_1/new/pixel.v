@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 12/06/2024 01:24:41 AM
-// Design Name: 
+// Design Name:
 // Module Name: pixel
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -31,35 +31,35 @@ module pixel(
     output wire [3:0] blue,
     output wire magic_debug_led
 );
-    
+
     parameter H_DISPLAY = 640;  // Horizontal active video
     parameter V_DISPLAY = 480;  // Vertical active video
-    
+
     wire [18:0] address = v_pos / 2 * H_DISPLAY / 2 + h_pos / 2;
     wire [11:0] pixel_data;
-    
+
     bgROM imgROM(address, clk, pixel_data);
 
     reg [7:0] fontaddr;
     reg [6:0] fontaddr_offset;
-    
+
     always @(posedge clk) begin
         fontaddr_offset = fontaddr >= 32 ? fontaddr - 32 : 0;
     end
 
     wire [1023:0] fontdat;
-    fontROM fontROM(.addr(fontaddr_offset), .clock(clk), .data(fontdat)); 
-    
+    fontROM fontROM(.addr(fontaddr_offset), .clock(clk), .data(fontdat));
+
     reg [3:0] r, g, b;
     assign red = r;
     assign green = g;
     assign blue = b;
-    
+
     parameter AREA_X_START = 178;
     parameter AREA_X_END = 462;
     parameter AREA_Y_START = 224;
     parameter AREA_Y_END = 256;
-    
+
     parameter RGB_X_LEFT = 170;
     parameter RGB_X_RIGHT = 470;
     parameter RGB_Y_TOP = 216;
@@ -74,18 +74,18 @@ module pixel(
         .b(rgb_b),
         .magic_debug_led(magic_debug_led)
     );
-    
+
     reg [3:0] alphabet_index;
     reg [5:0] alphabet_x;
-    
+
     reg font_on;
-    
-    always @(posedge clk) begin        
+
+    always @(posedge clk) begin
         if (h_pos >= AREA_X_START && h_pos < AREA_X_END && v_pos >= AREA_Y_START && v_pos < AREA_Y_END)
         begin
             alphabet_index = (h_pos - AREA_X_START) / 36;
             alphabet_x = (h_pos - AREA_X_START) % 36;
-           
+
             if (alphabet_index >= 8 || alphabet_x >= 32)
             begin
                 fontaddr = 0;
@@ -103,11 +103,11 @@ module pixel(
                     3'h7: fontaddr = text_data[63:56];
                     default: fontaddr = 0;
                 endcase
-                
+
                 // I don't know why tf it rotated 180 deg
                 font_on = fontdat[(AREA_Y_END - v_pos - 1) * 32 + 31 - alphabet_x];
             end
-            
+
             r = font_on ? 4'b1111: 4'b0000;
             g = font_on ? 4'b1111: 4'b0000;
             b = font_on ? 4'b1111: 4'b0000;
@@ -127,7 +127,7 @@ module pixel(
             end else begin
                 rgb_index = (RGB_X_RIGHT - RGB_X_LEFT) + (RGB_Y_BOTTOM - RGB_Y_TOP) + (RGB_X_RIGHT - RGB_X_LEFT) + (RGB_Y_BOTTOM - v_pos);
             end
-            
+
             r = rgb_r;
             g = rgb_g;
             b = rgb_b;

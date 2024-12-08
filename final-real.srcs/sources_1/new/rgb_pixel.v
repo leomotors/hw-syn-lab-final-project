@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 12/06/2024 09:08:12 PM
-// Design Name: 
+// Design Name:
 // Module Name: rgb_pixel
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -43,7 +43,7 @@ always @(posedge clk) begin
     end else begin
         time_counter <= time_counter + 1;
     end
-    
+
     offset <= (time_counter + x / 4) % AVAILABLE_COLORS;
 end
 

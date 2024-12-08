@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 12/06/2024 01:20:17 AM
-// Design Name: 
+// Design Name:
 // Module Name: vga_sync
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -45,7 +45,7 @@ module vga_sync(
     // Horizontal and vertical counters
     reg [9:0] h_counter = 0;  // 10 bits for 0-799
     reg [9:0] v_counter = 0;  // 10 bits for 0-524
-    
+
     always @(posedge clk) begin
         h_out = h_counter;
         v_out =  v_counter;
@@ -54,7 +54,7 @@ module vga_sync(
     // Generate horizontal and vertical sync signals
     assign Hsync = ~(h_counter >= (H_DISPLAY + H_FRONT_PORCH) &&
                      h_counter < (H_DISPLAY + H_FRONT_PORCH + H_SYNC_PULSE));
-                     
+
     assign Vsync = ~(v_counter >= (V_DISPLAY + V_FRONT_PORCH) &&
                      v_counter < (V_DISPLAY + V_FRONT_PORCH + V_SYNC_PULSE));
 

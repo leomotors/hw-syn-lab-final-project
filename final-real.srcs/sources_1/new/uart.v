@@ -17,11 +17,11 @@ module uart(
     baudrate_gen baudrate_gen(clk, baud);
     uart_rx receiver(baud, RsRx, received, data_out);
     uart_tx transmitter(baud, data_to_send, send_tx, sent, RsTx);
-    
+
     wire send_tx;
     wire [7:0] data_to_send;
     tx_mux muck(.data1(data_in), .data2(sw), .ena1(en), .ena2(sendSW), .data_out(data_to_send), .ena_out(send_tx));
-    
+
     always @(posedge baud) begin
         if (en) en = 0;
         if (data_ready) data_ready = 0;

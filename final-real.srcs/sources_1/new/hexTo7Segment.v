@@ -69,5 +69,5 @@ module hexTo7Segment(
           8'h20 : segments = 7'b1111111; // SPACE
           default : segments = 7'b0111111; // -
       endcase
-				
+
 endmodule
