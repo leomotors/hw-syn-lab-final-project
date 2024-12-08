@@ -12,16 +12,20 @@ Wede jude kamfro Bagulado?
 - Display Text on VGA Monitor
   - Minimum 8 characters per line ✅
   - Minimum 1 line ✅
-- Use Switch to send one byte data ✅
 - UART Communication between two Basys 3 boards ✅
+- Reset Switch ✅
+- Use Switch and Send Button as input ✅
+- Laptop's Keyboard (USB UART) as input ✅
 
 ## Usage
 
 - Synthesis and upload to both boards and keep connection between laptop and its board
 - Connect each board to VGA Monitor
 - Using J1 and L2 pin (Pmod connectors) for UART between boards, connect TX to RX and RX to TX
-- When data is sent from Laptop A to Board A, Board A will forward the data to Board B
-  using Pmod ports, when Board B receives the data, it will display the text on the VGA Monitor and also laptop B terminal
+- When data is sent from Laptop A to Board A or send button is pressed,
+  Board A will forward the data to Board B using Pmod ports,
+  when Board B receives the data,
+  it will display the text on the VGA Monitor and also laptop B terminal
 - This work the sames in other direction
 
 ## Software
@@ -44,7 +48,7 @@ AMD Vivado v2024.1
       - `uart_rx.v` - Handle receive
       - `tx_mux.v` - Mux Switch? for sending data from both USB UART and Switch
     - `uartClockMajik.v` - Magic that fixes bugs, do not touch and please do not ask me how
-    - `circularLinkedList.v` - Link list that will drop least recent data when full (It's not circular linked list 🤡)
+    - `slidingBuffer.v` - List that will drop least recent data when full
     - `clockDiv.v` - Counter Based Clock Divider
     - `quadSevenSeg.v` - Controls 7-segment display
       - `hexTo7Segment.v` - Decode ASCII code to Siekoo for 7-segment display
@@ -59,27 +63,34 @@ AMD Vivado v2024.1
       - `DFF.v` - D Flip-Flop
       - `singlePulser.v` - Single Pulser
 - Verilog Test Source (`final-real.srcs/sim_1/new`)
-  - `testCircularLinkedList.v` - Tests `circularLinkedList.v` (which is not Circular Linked List 🤡)
+  - `slidingBufferTester.v` - Tests `slidingBuffer.v`
   - `tx_mux_tester.v` - Tests `tx_mux.v`
 - Verilog IP (Generated)
   - `clk_wiz_0` - Clock Wizard for generating (close to) 25.175 MHz
 
 ## Demo
 
-<img src="./demo.webp" width=500 />
+### VGA Monitor
 
-Note: Not my table and so any acrylic stand there
+<img src="./images/demo.webp" width=500 />
 
 As you can see, there are some artifacts due to clock wizard not generating exactly 25.175 MHz (Closest it can be is 25.17301 MHz)
 
 Thank you @Bee0Theepob for suggesting images (eg. Chill Guy, pizza) to put in this background
 
+### UART Connection
+
+Note: This is config with one Basys 3 Board using USB to UART as mock for another Basys 3 Board
+
+<img src="./images/connection.webp" width=400 />
+
 ## Interesting Features
 
 - Also display text on 7-segment display (Only for applicable characters like capital letters)
+- Supports backspace (If your terminal is willing to send it)
 - Has wonderful background
 - Has RGB animation around typing area
 
 ## Limitation
 
-Image needs to be scaled down to 320x240 because of ROM space limitation but it still display clearly!
+Image needs to be scaled down to 320x240 because of ROM space limitation (but it still display clearly)
